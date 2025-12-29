@@ -158,6 +158,8 @@ void RunTcpServer(int port) {
   long long totalBytes =
       0; // 받은 총 데이터 크기 (1GB는 int 범위를 넘을 수 있으니 long long 추천)
 
+  unsigned char expected_val = 0;
+
   while (true) {
     // read(소켓, 버퍼, 버퍼크기)
     // 반환값: 읽은 바이트 수 (>0), 연결 종료(0), 에러(-1)
@@ -170,6 +172,15 @@ void RunTcpServer(int port) {
     } else if (bytesRead == -1) {
       perror("read error");
       break;
+    }
+
+    for (auto i : buffer) {
+      unsigned char received = (unsigned char)i;
+      if (received != expected_val) {
+        cout << "diff! received : " << received << "expected: " << expected_val
+             << endl;
+      }
+      expected_val++;
     }
 
     totalBytes += bytesRead;
