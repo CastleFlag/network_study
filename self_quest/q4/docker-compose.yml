@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  # Epoll Echo Server
+  server:
+    build: .
+    container_name: epoll_server
+    ports:
+      - "9000:9000"
+    command: ["./epoll_server", "9000", "et"]
+
+  # 스트레스 테스트 클라이언트
+  stress-test:
+    build: .
+    container_name: stress_test
+    depends_on:
+      - server
+    entrypoint: ["ruby", "stress_test.rb", "server", "9000", "100"]
+    profiles:
+      - test
